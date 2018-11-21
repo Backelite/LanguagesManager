@@ -17,6 +17,7 @@ extern NSString * const LanguagesManagerLanguageDidChangeNotification;
 
 @interface LanguagesManager : NSObject
 
+@property (strong, nonatomic) NSString *defaultLanguage;
 @property (assign, nonatomic, getter=notificationIsEnable) BOOL notificationEnable;
 
 // Singleton

@@ -42,9 +42,20 @@ NSString * const LanguagesManagerLanguageDidChangeNotification = @"LanguagesMana
 {
     self = [super init];
     if (self) {
-        _currentLanguage = [self getDefaultLanguage];
-        NSString *path = [[ NSBundle mainBundle ] pathForResource:self.currentLanguage ofType:@"lproj" ];
-        self.bundle = [NSBundle bundleWithPath:path];
+        NSString *defaultLanguage = [self getDefaultLanguage];
+        NSString *path = [[ NSBundle mainBundle ] pathForResource:defaultLanguage ofType:@"lproj"];
+        if (nil == path) {
+            if (defaultLanguage.length > 2) {
+                defaultLanguage = [defaultLanguage substringWithRange:NSMakeRange(0, 2)];
+                path = [[ NSBundle mainBundle ] pathForResource:defaultLanguage ofType:@"lproj"];
+            }
+        }
+        
+        if (path) {
+            self.currentLanguage = defaultLanguage;
+            NSString *path = [[ NSBundle mainBundle ] pathForResource:self.currentLanguage ofType:@"lproj"];
+            self.bundle = [NSBundle bundleWithPath:path];
+        }
     }
     return self;
 }
@@ -61,6 +72,17 @@ NSString * const LanguagesManagerLanguageDidChangeNotification = @"LanguagesMana
 
 
 #pragma mark - Languages Management
+
+- (void)setDefaultLanguage:(NSString *)defaultLanguage
+{
+    _defaultLanguage = defaultLanguage;
+    
+    if (nil == self.bundle) {
+        self.currentLanguage = _defaultLanguage;
+        NSString *path = [[ NSBundle mainBundle ] pathForResource:self.currentLanguage ofType:@"lproj" ];
+        self.bundle = [NSBundle bundleWithPath:path];
+    }
+}
 
 - (void)setBundle:(NSBundle *)bundle
 {
